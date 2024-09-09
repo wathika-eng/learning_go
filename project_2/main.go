@@ -25,14 +25,14 @@ func main() {
 	fmt.Printf("Input height in metres: ")
 	fmt.Scanf("%f", &height)
 	BMI := weight / (height * height)
-	fmt.Printf("%.1f\n", BMI)
+	fmt.Printf("Your BMI is %.1f\n", BMI)
 	if BMI >= 30 {
-		fmt.Println("You are obese")
+		fmt.Println("You are obese😧")
 	} else if BMI >= 25 {
-		fmt.Println("You are overweight")
+		fmt.Println("You are overweight😔")
 	} else if BMI >= 18.5 {
-		fmt.Println("Normal lifestyle")
+		fmt.Println("Normal lifestyle 🙂")
 	} else {
-		fmt.Println("You are underweight")
+		fmt.Println("You are underweight😟")
 	}
 }
