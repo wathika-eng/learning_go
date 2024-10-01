@@ -14,7 +14,11 @@ func main() {
 	for i := 0; i < rounds; i++ {
 		compChoiceNum := rand.Intn(3)
 		fmt.Printf("Round %d - Enter your choice (Rock, Paper, Scissors): \n", i+1)
-		fmt.Scanln(&userChoice)
+		do {
+			fmt.Scanln(&userChoice)
+		} while {
+			userChoice != "Rock" && userChoice != "Paper" && userChoice != "Scissors"
+		}
 		userChoice = strings.Title((strings.ToLower(userChoice)))
 
 		var compChoice string
@@ -24,7 +28,7 @@ func main() {
 		case 1:
 			compChoice = "Scissors"
 		case 2:
-			compChoice = "Paper"
+				compChoice = "Paper"
 		}
 
 		fmt.Printf("User chose: %v \t Computer chose: %v\n", userChoice, compChoice)
