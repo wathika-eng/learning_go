@@ -1,52 +1,45 @@
-// banking system
 package main
 
 import (
 	"bufio"
-	"errors"
 	"fmt"
 	"log"
 	"os"
+	"project_6/balance"
 	"strconv"
 	"strings"
 )
 
-const accountBalance = "balance.txt"
-
-// write the balance to a file
-func writeBalanceToFile(balance float64) {
-	// file name will be created if not present, bytes will be written
-	formattedBalance := fmt.Sprint(balance)
-	// convert string to byte and declare permission
-	os.WriteFile(accountBalance, []byte(formattedBalance), 0644)
-}
-
-// read balance from a file
-func readBalanceFromFile() (float64, error) {
-	// convert from byte to string then float
-	// error is always a value in Go
-	data, err := os.ReadFile(accountBalance)
-	//we have a error if not nil
-	if err != nil {
-		// return 2 values
-		return 0, errors.New("failed to read the file")
-	}
-	balanceString := string(data)
-	balanceFloat, _ := strconv.ParseFloat(balanceString, 64)
-	// return value and nil (to show no error of if available)
-	return balanceFloat, nil
-}
-
 func main() {
 	reader := bufio.NewReader(os.Stdin)
 	var withdrawAmount, depositAmount float64
-	//receive 2 values
-	bankBalance, err := readBalanceFromFile()
+	bankBalance, err := balance.ReadBalanceFromFile()
 	if err != nil {
-		// you can use os.Exit || panic() || return || log.Fatal()
-		// panic not preferred for simple errors
-		log.Fatal(err)
+		if os.IsNotExist(err) {
+			fmt.Printf("File not found. Would you like to create the file?\n1.Yes\n2.No\n")
+			input, _ := reader.ReadString('\n')
+			input = strings.TrimSpace(input)
+			userInput, err := strconv.Atoi(input)
+			if err != nil {
+				fmt.Println("Invalid input. Exiting now...")
+				log.Fatal("User entered an invalid number")
+			}
+			switch userInput {
+			case 1:
+				fmt.Println("Creating file with a default balance of Ksh 0.00")
+				balance.WriteBalanceToFile(0.00)
+			case 2:
+				fmt.Println("Exiting without creating the file.")
+				os.Exit(0)
+			default:
+				fmt.Println("Invalid option. Exiting now...")
+				log.Fatal("User selected an invalid option")
+			}
+		} else {
+			log.Fatal("Error reading balance file:", err)
+		}
 	}
+
 	pl("Welcome to Go Bank!")
 	for {
 		pl("What do you want to do?: ")
@@ -84,7 +77,7 @@ func main() {
 				pl("Not enough balance!")
 			} else {
 				bankBalance -= withdrawAmount
-				writeBalanceToFile(bankBalance)
+				balance.WriteBalanceToFile(bankBalance) // Corrected function call
 				fmt.Printf("Withdrew Ksh. %.2f, balance is Ksh. %.2f\n", withdrawAmount, bankBalance)
 			}
 
@@ -100,7 +93,7 @@ func main() {
 			}
 
 			bankBalance += depositAmount
-			writeBalanceToFile(bankBalance)
+			balance.WriteBalanceToFile(bankBalance) // Corrected function call
 			fmt.Printf("Deposited Ksh. %.2f, balance is Ksh. %.2f\n", depositAmount, bankBalance)
 
 		case 4:
