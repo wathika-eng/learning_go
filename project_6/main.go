@@ -1,18 +1,52 @@
+// banking system
 package main
 
 import (
 	"bufio"
+	"errors"
 	"fmt"
+	"log"
 	"os"
 	"strconv"
 	"strings"
 )
 
+const accountBalance = "balance.txt"
+
+// write the balance to a file
+func writeBalanceToFile(balance float64) {
+	// file name will be created if not present, bytes will be written
+	formattedBalance := fmt.Sprint(balance)
+	// convert string to byte and declare permission
+	os.WriteFile(accountBalance, []byte(formattedBalance), 0644)
+}
+
+// read balance from a file
+func readBalanceFromFile() (float64, error) {
+	// convert from byte to string then float
+	// error is always a value in Go
+	data, err := os.ReadFile(accountBalance)
+	//we have a error if not nil
+	if err != nil {
+		// return 2 values
+		return 0, errors.New("failed to read the file")
+	}
+	balanceString := string(data)
+	balanceFloat, _ := strconv.ParseFloat(balanceString, 64)
+	// return value and nil (to show no error of if available)
+	return balanceFloat, nil
+}
+
 func main() {
 	reader := bufio.NewReader(os.Stdin)
 	var withdrawAmount, depositAmount float64
-	bankBalance := 300.20
-
+	//receive 2 values
+	bankBalance, err := readBalanceFromFile()
+	if err != nil {
+		// you can use os.Exit || panic() || return || log.Fatal()
+		// panic not preferred for simple errors
+		log.Fatal(err)
+	}
 	pl("Welcome to Go Bank!")
 	for {
 		pl("What do you want to do?: ")
@@ -50,6 +84,7 @@ func main() {
 				pl("Not enough balance!")
 			} else {
 				bankBalance -= withdrawAmount
+				writeBalanceToFile(bankBalance)
 				fmt.Printf("Withdrew Ksh. %.2f, balance is Ksh. %.2f\n", withdrawAmount, bankBalance)
 			}
 
@@ -65,6 +100,7 @@ func main() {
 			}
 
 			bankBalance += depositAmount
+			writeBalanceToFile(bankBalance)
 			fmt.Printf("Deposited Ksh. %.2f, balance is Ksh. %.2f\n", depositAmount, bankBalance)
 
 		case 4:
@@ -77,6 +113,7 @@ func main() {
 	}
 }
 
+// custom function to print with a new char but shortened
 func pl(input string) {
 	fmt.Println(input)
 }
