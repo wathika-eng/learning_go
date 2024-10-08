@@ -1,8 +1,7 @@
-main:
+run:
 	go run main.go
 build:
 	go build -o main main.go
-run:
 	./main
 clean:
 	rm main
