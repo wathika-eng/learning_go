@@ -5,9 +5,10 @@ import (
 	"fmt"
 	"log"
 	"os"
-	"project_6/balance"
 	"strconv"
 	"strings"
+
+	"github.com/wathika-eng/learning_go/balance"
 )
 
 func main() {
