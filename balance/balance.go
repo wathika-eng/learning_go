@@ -25,7 +25,10 @@ func ReadBalanceFromFile() (float64, error) {
 	//we have a error if not nil
 	if err != nil {
 		// return 2 values
-		return 0, errors.New("failed to read the file")
+		if os.IsNotExist(err) {
+			return 0, nil // Indicate the file doesn't exist without an error
+		}
+		return 0, errors.New("failed to read the file: " + err.Error())
 	}
 	balanceString := string(data)
 	balanceFloat, _ := strconv.ParseFloat(balanceString, 64)
