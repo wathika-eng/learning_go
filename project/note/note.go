@@ -6,6 +6,7 @@ import (
 	"time"
 )
 
+// note struct which contains title, content and auto generated time
 type Note struct {
 	title   string
 	content string
@@ -13,6 +14,7 @@ type Note struct {
 	createdAt string
 }
 
+// creates a new note \n
 // using such pointers creates an extra overhead
 func New(noteTitle, noteContent string) (*Note, error) {
 	if noteTitle == "" || noteContent == "" {
@@ -29,6 +31,7 @@ func New(noteTitle, noteContent string) (*Note, error) {
 
 }
 
+// a method for struct Note which displays notes content, instead of having structs fields as public
 func (n Note) DisplayNote() {
 	fmt.Println(n.title, n.content, n.createdAt)
 }

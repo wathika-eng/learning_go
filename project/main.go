@@ -15,12 +15,13 @@ func main() {
 	title, content, _ := getNoteData()
 	userNote, err := note.New(title, content)
 	if err != nil {
+		// exit and display error
 		log.Fatal(err)
-	} else {
-		userNote.DisplayNote()
 	}
+	userNote.DisplayNote()
 }
 
+// gets user input with a reader and passes it to the note data function
 func getUserInput(prompt string) (string, error) {
 	fmt.Print(prompt)
 	var err error
@@ -34,6 +35,7 @@ func getUserInput(prompt string) (string, error) {
 	return formattedInput, nil
 }
 
+// gets the data from user input on the terminal, returns title, content and error if any
 func getNoteData() (string, string, error) {
 	title, err := getUserInput("Note Title: ")
 	content, err2 := getUserInput("Your content: ")
