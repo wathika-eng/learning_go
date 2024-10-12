@@ -2,10 +2,13 @@
 package main
 
 import (
+	"bufio"
 	"errors"
 	"fmt"
 	"log"
 	"noteApp/note"
+	"os"
+	"strings"
 )
 
 func main() {
@@ -19,13 +22,16 @@ func main() {
 }
 
 func getUserInput(prompt string) (string, error) {
-	fmt.Println(prompt)
+	fmt.Print(prompt)
+	var err error
 	var input string
-	fmt.Scanln(&input)
-	if input == "" {
+	reader := bufio.NewReader(os.Stdin)
+	input, err = reader.ReadString('\n')
+	if input == "" || err != nil {
 		return "", errors.New("content cannot be blank")
 	}
-	return input, nil
+	formattedInput := strings.TrimSpace(input)
+	return formattedInput, nil
 }
 
 func getNoteData() (string, string, error) {
