@@ -15,22 +15,28 @@ type User struct {
 	createdAt time.Time
 }
 
+// sample struct showing inheritance
 type Admin struct {
 	email    string
 	password string
 	// to inherit values from another struct, we embed
 	User
+	// use anonymous
+	// sometime avoid declaring name so as to easily calling struct with name
 }
 
-func New(email, password string) (*Admin, error) {
+func NewAdmin(email, password string) (*Admin, error) {
 	if email == "" {
-		return nil, errors.New("Email is required")
+		return nil, errors.New("email is required")
 	} else {
 		return &Admin{
 			email:    email,
 			password: password,
-			User: {
+			User: User{
 				firstName: "Admin",
+				lastName:  "kamaa",
+				birthDate: "09/10/2002",
+				createdAt: time.Now(),
 			},
 		}, nil
 	}

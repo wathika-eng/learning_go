@@ -16,14 +16,18 @@ func main() {
 	// outPutUserData(appUser)
 	//var appUser **User
 	appUser, err := user.New(userfirstName, userlastName, userbirthDate)
-	if err != nil {
+	admin, err2 := user.NewAdmin("examplegmail.com", "123j")
+	if err != nil || err2 != nil {
 		log.Fatal(err)
+		log.Fatal(err2)
 	} else {
 
 		appUser.OutPutUserData()
 		appUser.ClearUsername()
-		appUser.OutPutUserData()
+		// appUser.OutPutUserData()
 	}
+	admin.OutPutUserData()
+
 }
 
 func getUserData(promptText string) string {
