@@ -6,24 +6,37 @@ import (
 	"errors"
 	"fmt"
 	"log"
-	"noteApp/note"
+	"noteApp/todo"
 	"os"
 	"strings"
 )
 
+// interface which dictates a set of methods other structs must use or a contract
+// if it has one method, name it method name + "er"
+type saver interface {
+	// a method Save, it returns string or lserror
+	Save() (string, error)
+}
+
 func main() {
-	title, content, _ := getNoteData()
-	userNote, err := note.New(title, content)
+	todoText, err := getUserInput("Todo text: ")
+	todoData, err := todo.New(todoText)
 	if err != nil {
 		// exit and display error
 		log.Fatal(err)
 	}
 	// userNote.DisplayNote()
-	data, err := userNote.Save()
+	saveDate(todoData)
+}
+
+// the data var is of type saver
+func saveDate(data saver) {
+	// you can call the methods defined
+	saveData, err := data.Save()
 	if err != nil {
 		log.Print("Saving the file failed")
 	}
-	fmt.Printf("Json file data:\n%v", data)
+	fmt.Printf("Json file data:\n%v", saveData)
 }
 
 // gets user input with a reader and passes it to the note data function
@@ -42,12 +55,10 @@ func getUserInput(prompt string) (string, error) {
 }
 
 // gets the data from user input on the terminal, returns title, content and error if any
-func getNoteData() (string, string, error) {
-	title, err := getUserInput("Note Title: ")
-	content, err2 := getUserInput("Your content: ")
-	if err != nil || err2 != nil {
-		log.Fatal(err)
-		log.Fatal(err2)
-	}
-	return title, content, nil
-}
+// func getNoteData() (string, error) {
+// 	content, err := getUserInput("Your content: ")
+// 	if err != nil {
+// 		log.Fatal(err)
+// 	}
+// 	return content, nil
+// }
