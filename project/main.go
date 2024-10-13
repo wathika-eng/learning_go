@@ -18,7 +18,12 @@ func main() {
 		// exit and display error
 		log.Fatal(err)
 	}
-	userNote.DisplayNote()
+	// userNote.DisplayNote()
+	err, data := userNote.Save()
+	if err != nil {
+		log.Print("Saving the file failed")
+	}
+	fmt.Printf("Json file data:\n%v", data)
 }
 
 // gets user input with a reader and passes it to the note data function
