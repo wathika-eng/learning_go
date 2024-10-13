@@ -27,8 +27,9 @@ func getUserInput(prompt string) (string, error) {
 	var err error
 	var input string
 	reader := bufio.NewReader(os.Stdin)
+	// reader will capture blank error automatically
 	input, err = reader.ReadString('\n')
-	if input == "" || err != nil {
+	if err != nil {
 		return "", errors.New("content cannot be blank")
 	}
 	formattedInput := strings.TrimSpace(input)

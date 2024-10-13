@@ -1,8 +1,11 @@
 package note
 
 import (
+	"encoding/json"
 	"errors"
 	"fmt"
+	"os"
+	"strings"
 	"time"
 )
 
@@ -12,6 +15,21 @@ type Note struct {
 	content string
 	// instead of time.Now() use a string
 	createdAt string
+}
+
+// save each note to a file in the system
+func (n Note) Save() error {
+	// format the file well to allow constitency
+	fileName := strings.ReplaceAll(n.title, " ", "_")
+	fileName = strings.ToLower(fileName)
+	// format to json, will aready be byte
+	json, err := json.Marshal(n)
+	if err != nil {
+		return err
+	}
+	// filename, format, permissions
+	savedFile := os.WriteFile(fileName, json, 0644)
+	return savedFile
 }
 
 // creates a new note \n
