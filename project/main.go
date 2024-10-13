@@ -19,7 +19,7 @@ func main() {
 		log.Fatal(err)
 	}
 	// userNote.DisplayNote()
-	err, data := userNote.Save()
+	data, err := userNote.Save()
 	if err != nil {
 		log.Print("Saving the file failed")
 	}

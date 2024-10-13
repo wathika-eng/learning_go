@@ -21,7 +21,7 @@ type Note struct {
 // save each note to a file in the system
 func (note Note) Save() (string, error) {
 	// format the filename well to allow constitency
-	fileName := strings.ReplaceAll(note.Title, " ", "_")
+	fileName := strings.ReplaceAll(note.Title[:5], " ", "_")
 	fileName = strings.ToLower(fileName) + ".json"
 	// format to json, will already be byte
 	// we can indent to 4 spaces
