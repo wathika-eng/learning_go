@@ -1,3 +1,3 @@
-module github.com/wathika-eng/learning_go
+module learning
 
-go 1.23.2
+go 1.23.3
