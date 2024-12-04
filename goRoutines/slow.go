@@ -6,8 +6,8 @@ import (
 )
 
 // blocks greet, until it runs
-//
-// we can defer it or use go routines
+// defer schedules a fn to be executed after current fn, doesn't care about success or not
+// we use go routines to run with main
 func slowGreet(phrase string, doneChan chan bool) {
 	// simulated, can be an API call or calculation
 	time.Sleep(2 * time.Second)
