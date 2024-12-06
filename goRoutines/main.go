@@ -1,5 +1,7 @@
 package main
 
+import "fmt"
+
 func main() {
 	// use slices to avoid race
 	// a
@@ -17,10 +19,14 @@ func main() {
 	// }
 	// fmt.Println(done)
 	// range over channels, avoid deadlock (not knowing when done)
-	// close the slowest 
+	// close the slowest
 	for range done {
 		//
 	}
+	name := getUserByName("Kamaa")
+	chats := getUserChats(1)
+	friends := getUserByFriends(1)
+	fmt.Println(name, chats, friends)
 }
 
 // go routines are parallel, non-blocking

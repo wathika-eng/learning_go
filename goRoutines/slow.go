@@ -10,7 +10,7 @@ import (
 // we use go routines to run with main
 func slowGreet(phrase string, doneChan chan bool) {
 	// simulated, can be an API call or calculation
-	time.Sleep(2 * time.Second)
+	time.Sleep(1 * time.Second)
 	fmt.Println("Hello, ", phrase)
 	// once done, send data back to
 	doneChan <- true
