@@ -9,18 +9,25 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-const port = 8080
+const PORT = ":8080"
 
 func main() {
 	server := gin.Default()
+	// url and handler
 	server.GET("/events", getEvents)
 	server.POST("/events", createEvents)
+	server.GET("/hello", Hello)
+	// Print the port without the colon
+	fmt.Printf("server listening on http://localhost%v\n", PORT)
 
-	fmt.Printf("server listening on http://localhost:%v\n", port)
-	err := server.Run(":8080")
+	err := server.Run(PORT)
 	if err != nil {
 		log.Fatal(err)
 	}
+}
+
+func Hello(c *gin.Context) {
+	c.JSON(http.StatusOK, "Hello")
 }
 
 func getEvents(c *gin.Context) {
@@ -40,7 +47,12 @@ func createEvents(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Failed"})
 		log.Fatal(err)
 	}
+	// preallocate
 	event.Id = 1
 	event.UserID = 1
-	c.JSON(http.StatusCreated, gin.H{"message": "Created successfully"})
+	event.Save()
+	c.JSON(http.StatusCreated, gin.H{
+		"message": "Event '" + event.Name + "' created successfully",
+		"event":   event,
+	})
 }
