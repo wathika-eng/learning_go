@@ -1,6 +1,7 @@
 package main
 
 import (
+	"apiv2/pkg/db"
 	"apiv2/pkg/models"
 	"fmt"
 	"log"
@@ -13,6 +14,7 @@ const PORT = ":8080"
 
 func main() {
 	server := gin.Default()
+	db.InitDB()
 	// url and handler
 	server.GET("/events", getEvents)
 	server.POST("/events", createEvents)

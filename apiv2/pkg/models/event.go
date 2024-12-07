@@ -1,10 +1,14 @@
 package models
 
-import "time"
+import (
+	"apiv2/pkg/db"
+	"log"
+	"time"
+)
 
 // shape of event, required fields marked
 type Event struct {
-	Id          int       `json:"id"`
+	Id          int64     `json:"id"`
 	Name        string    `json:"name" binding:"required"`
 	Description string    `json:"description" binding:"required"`
 	Location    string    `json:"location" binding:"required"`
@@ -12,15 +16,55 @@ type Event struct {
 	UserID      int       `json:"userID"`
 }
 
-// store events
-var events = make([]Event, 0, 10)
-
 // methods to interact with Events in the DB
 func (e Event) Save() {
-	events = append(events, e)
+	// prevent sql injections by using ?
+	query := `
+	INSERT INTO events (
+	name, description, location, time, user_id
+	)
+	VALUES (?,?,?,?,?)
+	`
+	// prepare sql statement and handle any error
+	// reusable, in memory, complex
+	sqlstmt, err := db.DB.Prepare(query)
+	defer sqlstmt.Close()
+	if err != nil {
+		log.Fatal(err)
+	}
+	// exec is used when inserting, updating data
+	result, err := sqlstmt.Exec(e.Name, e.Description, e.Location, e.Time, e.UserID)
+	if err != nil {
+		log.Fatal(err)
+	}
+	// get the last ID inserted
+	id, err := result.LastInsertId()
+	e.Id = id
+	log.Fatal(err)
+	// events = append(events, e)
 }
 
 // get all events, not a method
 func GetAllEvents() []Event {
+	query := `SELECT * FROM EVENTS`
+	// query is simple and easy
+	// use query not exec, to get back rows
+	rows, err := db.DB.Query(query)
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer rows.Close()
+	// a slice of events to be appended
+	var events = make([]Event, 0, 10)
+	// loop runs as long as we have rows with data using a bool from NEXT
+	for rows.Next() {
+		var event Event
+		// read contents of row, returns pointer, can return error
+		err := rows.Scan(&event.Id, &event.Name, &event.Description, &event.Location, &event.Name, &event.UserID)
+		if err != nil {
+			log.Fatal(err)
+		}
+		events = append(events, event)
+	}
 	return events
 }

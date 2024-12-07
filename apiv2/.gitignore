@@ -10,6 +10,8 @@
 *.exe~
 *.dll
 *.so
+*.db
+*.sqlite3
 *.dylib
 .env
 # Test binary, built with `go test -c`
