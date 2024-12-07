@@ -33,7 +33,12 @@ func Hello(c *gin.Context) {
 }
 
 func getEvents(c *gin.Context) {
-	events := models.GetAllEvents()
+	events, errEvents := models.GetAllEvents()
+	if errEvents != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Failed to fetch events"})
+		return
+		// log.Fatal(err)
+	}
 	// returned in context
 	c.JSON(http.StatusOK, events)
 }
@@ -43,16 +48,17 @@ func createEvents(c *gin.Context) {
 	var event models.Event
 	// works like scan function in fmt
 	// pointer passed, body with model structure, empty structs will be null but can enforce
-	err := c.ShouldBindJSON(&event)
+	errJson := c.ShouldBindJSON(&event)
 	// handle error
-	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Failed"})
-		log.Fatal(err)
-	}
 	// preallocate
 	event.Id = 1
 	event.UserID = 1
-	event.Save()
+	errSave := event.Save()
+	if errJson != nil || errSave != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Failed"})
+		return
+		// log.Fatal(err)
+	}
 	c.JSON(http.StatusCreated, gin.H{
 		"message": "Event '" + event.Name + "' created successfully",
 		"event":   event,

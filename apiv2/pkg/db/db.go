@@ -4,6 +4,7 @@ import (
 	// prevent the import from being removed
 	// just expose functionality used under the hood
 	"database/sql"
+	"errors"
 	"log"
 
 	_ "github.com/mattn/go-sqlite3"
@@ -20,18 +21,19 @@ func InitDB() {
 	// sql.Open(driverName, path_to_the_db ending with .db)
 	DB, err = sql.Open("sqlite3", "api.db")
 	// if we get an error connecting to the DB, just crash the app
-	if err != nil {
-		log.Fatal(err)
-	}
 	// connection pool
 	DB.SetMaxOpenConns(POOL)
 	DB.SetMaxIdleConns(IDLE)
-	createTables()
+	err1 := createTables()
+	if err != nil || err1 != nil {
+		combinedErr := errors.Join(err, err1)
+		log.Fatal(combinedErr)
+	}
 	//defer DB.Close()
 }
 
 // create tables for our DB
-func createTables() {
+func createTables() error {
 	createEventTable := `
 	CREATE TABLE IF NOT EXISTS events (
     id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
@@ -45,6 +47,7 @@ func createTables() {
 	// check if table exists else create it on start
 	_, err := DB.Exec(createEventTable)
 	if err != nil {
-		log.Fatal(err)
+		return err
 	}
+	return nil
 }
