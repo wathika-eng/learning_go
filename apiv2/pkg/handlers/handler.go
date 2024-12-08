@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"apiv2/pkg/models"
+	"fmt"
 	"net/http"
 	"strconv"
 
@@ -31,7 +32,7 @@ func CreateEvents(c *gin.Context) {
 	event.UserID = 1
 	errSave := event.Save()
 	if errJson != nil || errSave != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Failed"})
+		c.JSON(http.StatusBadRequest, gin.H{"error": errJson.Error()})
 		return
 		// log.Fatal(err)
 	}
@@ -48,5 +49,6 @@ func GetEvent(c *gin.Context) {
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"Message": "Couln't pasrse"})
 	}
+	fmt.Println(eventId)
 
 }

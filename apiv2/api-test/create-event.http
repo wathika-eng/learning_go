@@ -8,3 +8,6 @@ Content-Type: application/json
     "location": "Event 1 Location",
     "time": "2021-01-01T00:00:00.000Z"
 }
+
+
+{"name": "Event 1'; DROP TABLE events; --", "description": "Test", "location": "Test Location", "time": "2021-01-01T00:00:00.000Z"}

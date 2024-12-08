@@ -2,7 +2,7 @@ package models
 
 import (
 	"apiv2/pkg/db"
-	"errors"
+	"fmt"
 	"time"
 )
 
@@ -16,30 +16,37 @@ type Event struct {
 	UserID      int       `json:"userID"`
 }
 
-// methods to interact with Events in the DB
-func (e Event) Save() error {
-	// prevent sql injections by using ?
+// Save method to interact with Events in the DB
+func (e *Event) Save() error {
+	// Define the query to insert the event, using placeholders for user input (prevents SQL injection)
 	query := `
-	INSERT INTO events (
-	name, description, location, time, user_id
-	)
-	VALUES (?,?,?,?,?)
+	INSERT INTO events (name, description, location, time, user_id)
+	VALUES (?, ?, ?, ?, ?)
 	`
-	// prepare sql statement and handle any error
-	// reusable, in memory, complex
-	sqlstmt, errSql := db.DB.Prepare(query)
-	defer sqlstmt.Close()
-	// exec is used when inserting, updating data
-	result, errResult := sqlstmt.Exec(e.Name, e.Description, e.Location, e.Time, e.UserID)
-	// get the last ID inserted
-	id, errID := result.LastInsertId()
-	e.Id = id
-	if errSql != nil || errResult != nil || errID != nil {
-		combinedErr := errors.Join(errSql, errResult, errID)
-		return combinedErr
+
+	// Prepare the SQL statement for execution
+	sqlstmt, err := db.DB.Prepare(query)
+	if err != nil {
+		return fmt.Errorf("error preparing the SQL query: %v", err)
 	}
+	defer sqlstmt.Close() // Ensure the statement is closed after execution
+
+	// Execute the statement with the event data
+	result, err := sqlstmt.Exec(e.Name, e.Description, e.Location, e.Time, e.UserID)
+	if err != nil {
+		return fmt.Errorf("error executing the SQL query: %v", err)
+	}
+
+	// Get the last inserted ID
+	id, err := result.LastInsertId()
+	if err != nil {
+		return fmt.Errorf("error retrieving last inserted ID: %v", err)
+	}
+
+	// Assign the new ID to the event struct
+	e.Id = id
+
 	return nil
-	// events = append(events, e)
 }
 
 // get all events, not a method
@@ -67,7 +74,7 @@ func GetAllEvents() ([]Event, error) {
 	return events, nil
 }
 
-func GetEventByID(id int64){
-	query := "SELECT * FROM events WHERE id = ?"
-	db.DB.QueryRow()
-}
+// func GetEventByID(id int64){
+// 	query := "SELECT * FROM events WHERE id = ?"
+// 	db.DB.QueryRow()
+// }
