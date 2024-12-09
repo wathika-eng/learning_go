@@ -2,7 +2,7 @@ package models
 
 import (
 	"apiv2/pkg/db"
-	"apiv2/pkg/utilis"
+	"apiv2/pkg/utils"
 	"database/sql"
 	"errors"
 	"fmt"
@@ -20,7 +20,7 @@ type Event struct {
 
 // Save method to interact with Events in the DB
 func (e *Event) Save() error {
-	e.Time = utilis.DBTime()
+	e.Time = utils.DBTime()
 	// Define the query to insert the event, using placeholders for user input (prevents SQL injection)
 	query := `
 	INSERT INTO events (name, description, location, time, user_id)

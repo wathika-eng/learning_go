@@ -2,8 +2,7 @@ package models
 
 import (
 	"apiv2/pkg/db"
-	"apiv2/pkg/utilis"
-	"database/sql"
+	"apiv2/pkg/utils"
 	"fmt"
 )
 
@@ -12,32 +11,27 @@ type User struct {
 	Name      string `json:"name" binding:"required"`
 	Email     string `json:"email" binding:"required"`
 	Password  string `json:"password" binding:"required"`
-	CreatedAt string `json:"time" binding:"required"`
+	CreatedAt string `json:"time"`
 }
 
-// Save method to interact with Users in the DB
-func (e *User) Save() error {
-	e.CreatedAt = utilis.DBTime()
-	// Define the query to insert the event, using placeholders for user input (prevents SQL injection)
+func (u *User) Save() error {
+	// Set the creation time
+	u.CreatedAt = utils.DBTime()
+
+	// Hash the user's password
+	hashedPass, err := utils.HashPassword(u.Password)
+	if err != nil {
+		return fmt.Errorf("error hashing password: %v", err)
+	}
+
+	// Define the query to insert the user (prevents SQL injection)
 	query := `
-	INSERT INTO users (name, email, email, password, createdAt)
-	VALUES (?, ?, ?, ?, ?)
+		INSERT INTO users (name, email, password, createdAt)
+		VALUES (?, ?, ?, ?)
 	`
 
-	// Prepare the SQL statement for execution
-	sqlstmt, err := db.DB.Prepare(query)
-	if err != nil {
-		return fmt.Errorf("error preparing the SQL query: %v", err)
-	}
-	defer func(sqlstmt *sql.Stmt) {
-		err := sqlstmt.Close()
-		if err != nil {
-
-		}
-	}(sqlstmt) // Ensure the statement is closed after execution
-
-	// Execute the statement with the event data
-	result, err := sqlstmt.Exec(e.Name, e.Email, e.Password, e.CreatedAt)
+	// Execute the query directly
+	result, err := db.DB.Exec(query, u.Name, u.Email, hashedPass, u.CreatedAt)
 	if err != nil {
 		return fmt.Errorf("error executing the SQL query: %v", err)
 	}
@@ -48,8 +42,8 @@ func (e *User) Save() error {
 		return fmt.Errorf("error retrieving last inserted ID: %v", err)
 	}
 
-	// Assign the new ID to the event struct
-	e.ID = id
+	// Assign the new ID to the user struct
+	u.ID = id
 
 	return nil
 }

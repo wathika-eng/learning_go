@@ -1,4 +1,5 @@
 package routes
+
 import "github.com/gin-gonic/gin"
 
 // pointer to our Gin app
@@ -11,4 +12,5 @@ func RegisterRoutes(server *gin.Engine) {
 	//put to update resource
 	server.PUT("events/:id", UpdateEvent)
 	server.DELETE("events/:id", DeleteEvent)
+	server.POST("/signup", CreateUsers)
 }
