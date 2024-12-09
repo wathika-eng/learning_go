@@ -7,6 +7,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+// signup users functionality/endpoint
 func CreateUsers(c *gin.Context) {
 	var users models.User
 

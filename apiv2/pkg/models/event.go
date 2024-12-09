@@ -87,6 +87,7 @@ func GetAllEvents() ([]Event, error) {
 	return events, nil
 }
 
+// fetch a single event in DB
 func GetEventByID(id int64) (*Event, error) {
 	if id <= 0 {
 		return nil, fmt.Errorf("invalid event ID: %d", id)
@@ -120,6 +121,7 @@ func (e *Event) Update() error {
 	return nil
 }
 
+// delete an event from DB
 func (e *Event) Delete() error {
 	query := `
 	DELETE FROM events
@@ -132,6 +134,7 @@ func (e *Event) Delete() error {
 	return nil
 }
 
+// check if a certain event exists
 func (e Event) CheckEvent() error {
 	query := `
     SELECT name FROM events

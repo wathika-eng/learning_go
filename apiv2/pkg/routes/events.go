@@ -9,6 +9,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+// fetch all events in DB and return in JSON format
 func GetEvents(c *gin.Context) {
 	var message string
 	events, errEvents := models.GetAllEvents()
@@ -24,6 +25,7 @@ func GetEvents(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"events": events, "message": message})
 }
 
+// create a new event on the DB
 func CreateEvents(c *gin.Context) {
 	var event models.Event
 
@@ -57,6 +59,7 @@ func CreateEvents(c *gin.Context) {
 	})
 }
 
+// fetch a single event based on ID in DB and return in JSON format
 func GetEvent(c *gin.Context) {
 	// Parse the event ID from the URL parameter
 	eventId, err := strconv.ParseInt(c.Param("id"), 10, 64)
@@ -83,6 +86,7 @@ func GetEvent(c *gin.Context) {
 	c.JSON(http.StatusOK, event)
 }
 
+// update a certain event on the DB
 func UpdateEvent(c *gin.Context) {
 	// Parse the event ID from the URL parameter
 	eventId, err := strconv.ParseInt(c.Param("id"), 10, 64)
@@ -124,6 +128,7 @@ func UpdateEvent(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"message": "Event with ID %v updated", "event": newEvent.Name})
 }
 
+// delete a certain event on the DB
 func DeleteEvent(c *gin.Context) {
 	// Parse the event ID from the URL parameter
 	eventId, err := strconv.ParseInt(c.Param("id"), 10, 64)

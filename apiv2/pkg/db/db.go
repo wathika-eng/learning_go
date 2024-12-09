@@ -13,9 +13,11 @@ import (
 // DB Global (a pointer to the SQL DB)
 var DB *sql.DB
 
+// connection pool
 const POOL = 10
 const IDLE = 3
 
+// initialize the database connection + setup
 func InitDB() {
 	var err error
 	// sql.Open(driverName, path_to_the_db ending with .db)
@@ -34,6 +36,7 @@ func InitDB() {
 
 // create tables for our DB
 func createTables() error {
+	// users table
 	createUsersTable := `
 	CREATE TABLE IF NOT EXISTS users (
 	id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
@@ -48,6 +51,7 @@ func createTables() error {
 		return err
 	}
 
+	// events table
 	createEventTable := `
 	CREATE TABLE IF NOT EXISTS events (
     id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,

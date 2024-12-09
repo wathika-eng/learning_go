@@ -8,7 +8,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-const PORT = ":8080"
+const PORT string = ":8080"
 
 func main() {
 	// this is a pointer

@@ -1,3 +1,4 @@
+// package model defines interfaces and methods for the DB
 package models
 
 import (
@@ -6,6 +7,7 @@ import (
 	"fmt"
 )
 
+// shape of user
 type User struct {
 	ID        int64  `json:"id"`
 	Name      string `json:"name" binding:"required"`
@@ -14,6 +16,7 @@ type User struct {
 	CreatedAt string `json:"time"`
 }
 
+// save user to Database
 func (u *User) Save() error {
 	// Set the creation time
 	u.CreatedAt = utils.DBTime()
