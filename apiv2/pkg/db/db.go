@@ -34,18 +34,33 @@ func InitDB() {
 
 // create tables for our DB
 func createTables() error {
+	createUsersTable := `
+	CREATE TABLE IF NOT EXISTS users (
+	id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+	email TEXT NOT NULL unique,
+	name TEXT NOT NULL,
+	createdAt DATETIME NOT NULL,
+	password TEXT NOT NULL
+	) 
+	`
+	_, err := DB.Exec(createUsersTable)
+	if err != nil {
+		return err
+	}
+
 	createEventTable := `
 	CREATE TABLE IF NOT EXISTS events (
     id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
-    name TEXT NOT NULL,
+    name TEXT NOT NULL unique,
     description TEXT NOT NULL,
 	location TEXT NOT NULL,
-    time DATETIME,
-    user_id INTEGER
+    time DATETIME NOT NULL,
+    user_id INTEGER,
+	FOREIGN KEY(user_id) REFERENCES user(id)
 	);
 	`
 	// check if table exists else create it on start
-	_, err := DB.Exec(createEventTable)
+	_, err = DB.Exec(createEventTable)
 	if err != nil {
 		return err
 	}

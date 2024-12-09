@@ -1,4 +1,4 @@
-package handlers
+package routes
 
 import (
 	"apiv2/pkg/models"
@@ -10,32 +10,47 @@ import (
 )
 
 func GetEvents(c *gin.Context) {
+	var message string
 	events, errEvents := models.GetAllEvents()
 	if errEvents != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Failed to fetch events"})
 		return
 		// log.Fatal(err)
 	}
+	if len(events) == 0 {
+		message = "NO EVENTS"
+	}
 	// returned in context
-	c.JSON(http.StatusOK, events)
+	c.JSON(http.StatusOK, gin.H{"events": events, "message": message})
 }
 
-// extract incoming data
 func CreateEvents(c *gin.Context) {
 	var event models.Event
-	// works like scan function in fmt
-	// pointer passed, body with model structure, empty structs will be null but can enforce
-	errJson := c.ShouldBindJSON(&event)
-	// handle error
-	// preallocate
-	event.Id = 1
-	event.UserID = 1
-	errSave := event.Save()
-	if errJson != nil || errSave != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": errJson})
+
+	// Parse the incoming JSON body into the event struct
+	if err := c.ShouldBindJSON(&event); err != nil {
+		// Return a bad request error with specific message
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
-		// log.Fatal(err)
 	}
+
+	// Pre-allocate event fields if required (consider user authentication for dynamic fields)
+	event.UserID = 1 // This should ideally come from authenticated user
+	event.Id = 1     // Assuming ID is generated or set elsewhere (like DB)
+
+	// // Validate the event data
+	// if err := event.CheckEvent(); err != nil {
+	// 	c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+	// 	return
+	// }
+
+	// Save the event to the database
+	if err := event.Save(); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	// Respond with a success message and the created event details
 	c.JSON(http.StatusCreated, gin.H{
 		"message": "Event '" + event.Name + "' created successfully",
 		"event":   event,
@@ -107,4 +122,36 @@ func UpdateEvent(c *gin.Context) {
 		// log.Fatal(err)
 	}
 	c.JSON(http.StatusOK, gin.H{"message": "Event with ID %v updated", "event": newEvent.Name})
+}
+
+func DeleteEvent(c *gin.Context) {
+	// Parse the event ID from the URL parameter
+	eventId, err := strconv.ParseInt(c.Param("id"), 10, 64)
+	if err != nil {
+		// Client error - invalid ID
+		c.JSON(http.StatusBadRequest, gin.H{"Message": "Invalid event ID format"})
+		return
+	}
+
+	// Fetch the event from the database using the parsed ID
+	_, err = models.GetEventByID(eventId)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			// Event not found - client error
+			c.JSON(http.StatusNotFound, gin.H{"Message": "Event not found"})
+		} else {
+			// Server error
+			c.JSON(http.StatusInternalServerError, gin.H{"Error": "Failed to fetch event"})
+		}
+		return
+	}
+	var deleteEvent models.Event
+	deleteEvent.Id = eventId
+	err = deleteEvent.Delete()
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+		// log.Fatal(err)
+	}
+	c.JSON(http.StatusOK, gin.H{"message": "Event deleted", "event": eventId})
 }

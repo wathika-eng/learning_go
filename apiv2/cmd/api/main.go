@@ -2,7 +2,7 @@ package main
 
 import (
 	"apiv2/pkg/db"
-	"apiv2/pkg/handlers"
+	"apiv2/pkg/routes"
 	"fmt"
 
 	"github.com/gin-gonic/gin"
@@ -14,7 +14,7 @@ func main() {
 	// this is a pointer
 	server := gin.Default()
 	db.InitDB()
-	handlers.RegisterRoutes(server)
+	routes.RegisterRoutes(server)
 	fmt.Printf("server listening on http://localhost%v\n", PORT)
 
 	err := server.Run(PORT)

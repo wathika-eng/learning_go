@@ -2,23 +2,25 @@ package models
 
 import (
 	"apiv2/pkg/db"
+	"apiv2/pkg/utilis"
 	"database/sql"
+	"errors"
 	"fmt"
-	"time"
 )
 
 // shape of event, required fields marked
 type Event struct {
-	Id          int64     `json:"id"`
-	Name        string    `json:"name" binding:"required"`
-	Description string    `json:"description" binding:"required"`
-	Location    string    `json:"location" binding:"required"`
-	Time        time.Time `json:"time" binding:"required"`
-	UserID      int       `json:"userID"`
+	Id          int64  `json:"id"`
+	Name        string `json:"name" binding:"required"`
+	Description string `json:"description" binding:"required"`
+	Location    string `json:"location" binding:"required"`
+	Time        string `json:"time"`
+	UserID      int    `json:"userID"`
 }
 
 // Save method to interact with Events in the DB
 func (e *Event) Save() error {
+	e.Time = utilis.DBTime()
 	// Define the query to insert the event, using placeholders for user input (prevents SQL injection)
 	query := `
 	INSERT INTO events (name, description, location, time, user_id)
@@ -114,6 +116,35 @@ func (e *Event) Update() error {
 	_, err := db.DB.Exec(query, e.Name, e.Description, e.Location, e.Time, e.Id)
 	if err != nil {
 		return err
+	}
+	return nil
+}
+
+func (e *Event) Delete() error {
+	query := `
+	DELETE FROM events
+	WHERE id=?
+	`
+	_, err := db.DB.Exec(query, e.Id)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (e Event) CheckEvent() error {
+	query := `
+    SELECT name FROM events
+    WHERE name = ?
+`
+	var existingEventName string
+	err := db.DB.QueryRow(query, e.Name).Scan(&existingEventName)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return nil
+			// No event found, proceed with inserting the new event
+		}
+		return errors.New("Event with a similar name already exists")
 	}
 	return nil
 }

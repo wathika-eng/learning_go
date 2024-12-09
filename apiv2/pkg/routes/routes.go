@@ -1,5 +1,4 @@
-package handlers
-
+package routes
 import "github.com/gin-gonic/gin"
 
 // pointer to our Gin app
@@ -11,4 +10,5 @@ func RegisterRoutes(server *gin.Engine) {
 	server.POST("/events", CreateEvents)
 	//put to update resource
 	server.PUT("events/:id", UpdateEvent)
+	server.DELETE("events/:id", DeleteEvent)
 }
