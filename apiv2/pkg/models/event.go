@@ -2,6 +2,7 @@ package models
 
 import (
 	"apiv2/pkg/db"
+	"database/sql"
 	"fmt"
 	"time"
 )
@@ -29,7 +30,12 @@ func (e *Event) Save() error {
 	if err != nil {
 		return fmt.Errorf("error preparing the SQL query: %v", err)
 	}
-	defer sqlstmt.Close() // Ensure the statement is closed after execution
+	defer func(sqlstmt *sql.Stmt) {
+		err := sqlstmt.Close()
+		if err != nil {
+
+		}
+	}(sqlstmt) // Ensure the statement is closed after execution
 
 	// Execute the statement with the event data
 	result, err := sqlstmt.Exec(e.Name, e.Description, e.Location, e.Time, e.UserID)
@@ -58,7 +64,12 @@ func GetAllEvents() ([]Event, error) {
 	if err != nil {
 		return nil, err
 	}
-	defer rows.Close()
+	defer func(rows *sql.Rows) {
+		err := rows.Close()
+		if err != nil {
+
+		}
+	}(rows)
 	// a slice of events to be appended
 	var events = make([]Event, 0, 10)
 	// loop runs as long as we have rows with data using a bool from NEXT
@@ -74,7 +85,35 @@ func GetAllEvents() ([]Event, error) {
 	return events, nil
 }
 
-// func GetEventByID(id int64){
-// 	query := "SELECT * FROM events WHERE id = ?"
-// 	db.DB.QueryRow()
-// }
+func GetEventByID(id int64) (*Event, error) {
+	if id <= 0 {
+		return nil, fmt.Errorf("invalid event ID: %d", id)
+	}
+
+	query := "SELECT id, name, description, location, user_id FROM events WHERE id = ?"
+	row := db.DB.QueryRow(query, id)
+
+	var event Event
+	err := row.Scan(&event.Id, &event.Name, &event.Description, &event.Location, &event.UserID)
+	if err == sql.ErrNoRows {
+		return nil, fmt.Errorf("event with ID %d not found", id)
+	} else if err != nil {
+		return nil, err
+	}
+
+	return &event, nil
+}
+
+// update Event
+func (e *Event) Update() error {
+	query := `
+	UPDATE events
+	SET name = ?, description = ?, location = ?, time = ?
+	WHERE id=?
+	`
+	_, err := db.DB.Exec(query, e.Name, e.Description, e.Location, e.Time, e.Id)
+	if err != nil {
+		return err
+	}
+	return nil
+}
