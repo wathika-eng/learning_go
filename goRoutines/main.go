@@ -18,7 +18,7 @@ func main() {
 	// 	<-done
 	// }
 	// fmt.Println(done)
-	// range over channels, avoid deadlock (not knowing when done)
+	// range over channels, avo id deadlock (not knowing when done)
 	// close the slowest
 	for range done {
 		//

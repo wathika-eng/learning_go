@@ -1,8 +1,0 @@
-PUT http://localhost:8080/events/1
-
-{
-    "name": "Update",
-    "description": "Event 1 Description",
-    "location": "New",
-    "time": "2021-01-01T00:00:00.000Z"
-}

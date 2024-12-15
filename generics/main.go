@@ -38,4 +38,6 @@ func main() {
 		return n * 2
 	})
 	fmt.Println(results)
+	BadGo("Bad design")
+	BadGo(2)
 }
