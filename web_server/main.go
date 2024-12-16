@@ -1,15 +1,44 @@
 package main
 
-import "fmt"
+import (
+	"fmt"
+	"net/http"
+	"sync"
+)
+
+type Car struct {
+	ID          string `json:"ID"`
+	NumberPlate string `json:"Number Plate"`
+	Engine      string `json:"Engine"`
+	YOM         int    `json:"YOM"`
+}
+
+type Drivers struct {
+	ID      string `json:"ID"`
+	Name    string `json:"Name"`
+	Age     int    `json:"Age"`
+	DLClass string `json:"Dl Class"`
+	Matatu  Car    `json:"Matatu"`
+}
+
+// cache data
+var DriverCache = make(map[int]Drivers)
+
+// lock read/write
+var cacheMutex sync.RWMutex
 
 func main() {
-	var result []int // Slice to hold the results
-	var i uint64
-	// Sequentially append values to the slice
-	for i = 0; i < 18446744073709551615; i++ {
-		result = append(result, int(i)) // Append to the slice
-	}
-
-	// Print the result slice (it will contain numbers from 0 to 999)
-	fmt.Println("Result slice:", result)
+	// driver1 := Drivers{}
+	// driver1.GenData()
+	// fmt.Printf("Driver Details:\n%+v\n", driver1)
+	PopulateCache(5)
+	// server setup
+	router := http.NewServeMux()
+	// routes
+	router.HandleFunc("GET /drivers", handleGetDrivers)
+	router.HandleFunc("POST /drivers", handleCreateDrivers)
+	// get user by ID
+	router.HandleFunc("GET /drivers/{id}", getDriver)
+	fmt.Println("Server listening on http://localhost:8080")
+	http.ListenAndServe(":8080", router)
 }
