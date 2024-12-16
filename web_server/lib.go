@@ -33,8 +33,8 @@ func (d *Drivers) GenData() {
 	}
 }
 
-func PopulateCache(n int) {
-	for i := 0; i < n; i++ {
+func PopulateCache(n uint8) {
+	for i := 0; i < int(n); i++ {
 		var driver Drivers
 		driver.GenData()
 

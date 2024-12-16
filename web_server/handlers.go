@@ -13,7 +13,7 @@ func handleGetDrivers(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Content-Type", "application/json")
 	encoder := json.NewEncoder(w)
-	encoder.SetIndent("", "  ") // Enable pretty printing with 2-space indentation
+	encoder.SetIndent("", "  ")
 	encoder.Encode(DriverCache)
 }
 
@@ -47,10 +47,11 @@ func handleCreateDrivers(w http.ResponseWriter, r *http.Request) {
 
 	// Add driver to the cache
 	DriverCache[len(DriverCache)+1] = driver
-
+	encoder := json.NewEncoder(w)
+	encoder.SetIndent("", "  ")
+	encoder.Encode(driver)
 	// Respond with success
 	w.WriteHeader(http.StatusOK)
-	json.NewEncoder(w).Encode(driver)
 }
 
 func getDriver(w http.ResponseWriter, r *http.Request) {

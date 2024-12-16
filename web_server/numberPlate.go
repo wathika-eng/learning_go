@@ -12,7 +12,7 @@ func generateNumberPlate() string {
 	rand.Seed(time.Now().UnixNano())
 
 	// Generate three random letters
-	letterPart := string(letters[rand.Intn(len(letters))]) +
+	letterPart := "K" +
 		string(letters[rand.Intn(len(letters))]) +
 		string(letters[rand.Intn(len(letters))])
 

@@ -31,7 +31,7 @@ func main() {
 	// driver1 := Drivers{}
 	// driver1.GenData()
 	// fmt.Printf("Driver Details:\n%+v\n", driver1)
-	PopulateCache(5)
+	PopulateCache(10)
 	// server setup
 	router := http.NewServeMux()
 	// routes
